@@ -19,7 +19,7 @@ public class Calculator extends Application {
     private final int HEIGHT = 225;
 
     private Label textScreen = new Label("0");
-    private Button filler = new Button("A");
+    private Button filler = new Button("x");
     private Button backspace = new Button("←");
     private Button buttonC = new Button("C");
     private Button button1 = new Button("1");
@@ -39,6 +39,8 @@ public class Calculator extends Application {
     private Button buttonEqual = new Button("=");
     private Button buttonSign = new Button("±");
     private Button buttonDot = new Button(".");
+
+    private boolean resetOnNextNumber = false;
 
     // store numbers and operands, calculates only when equal is pressed
     private LinkedList<Object> toCalculate = new LinkedList<>();
@@ -66,7 +68,6 @@ public class Calculator extends Application {
         buttonPlus.setOnAction(e -> handleOperandButton(e));
         buttonMultiply.setOnAction(e -> handleOperandButton(e));
         buttonDivide.setOnAction(e -> handleOperandButton(e));
-        // TODO: buttonEquals.setOnAction(e->something);
 
         // rest of the buttons
         buttonSign.setOnAction(e -> {
@@ -97,6 +98,9 @@ public class Calculator extends Application {
             }
         });
 
+        // handling for equals button
+        buttonEqual.setOnAction(e->calculate());
+
         Scene scene = new Scene(borderPane, WIDTH, HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
@@ -104,7 +108,10 @@ public class Calculator extends Application {
         primaryStage.show();
     }
 
-    // top pane representing the label
+    /**
+     * Sets up the top half of the GUI and its properties
+     * @return VBox with text screen
+     */
     private VBox getTopPane() {
         VBox topPane = new VBox();
         topPane.setAlignment(Pos.CENTER_RIGHT);
@@ -114,7 +121,10 @@ public class Calculator extends Application {
         return topPane;
     }
 
-    // bottom pane with the number/operand buttons
+    /**
+     * Sets up bottom half of the GUI and its properties
+     * @return grid pane with buttons
+     */
     private GridPane getBottomPane() {
         GridPane bottomPane = new GridPane();
         bottomPane.setHgap(10);
@@ -154,7 +164,17 @@ public class Calculator extends Application {
         return bottomPane;
     }
 
+    /**
+     * Responsible for handling number buttons
+     * @param e
+     */
     private void handleNumberButton(ActionEvent e) {
+        if(resetOnNextNumber){
+            this.resetOnNextNumber = false;
+            textScreen.setText("0");
+        }
+
+
         // get the string of the button
         String textToSet = ((Button) e.getSource()).getText();
 
@@ -175,12 +195,79 @@ public class Calculator extends Application {
         }
     }
 
-    // TODO
+    /**
+     * Responsible for handling "+","-","/","*" buttons
+     * @param e
+     */
     private void handleOperandButton(ActionEvent e) {
+       if(this.resetOnNextNumber){
+           return;
+       }
         //get the number inputted so far
-        double input = Double.parseDouble(textScreen.getText());
+        double input;
+        try {
+            input = Double.parseDouble(textScreen.getText());
+        }
+        catch(NumberFormatException exp){
+            // TODO: exception better handling
+            System.out.println("Error");
+            return;
+        }
 
+        // store the number and operand into the LinkedList
+        toCalculate.add(input);
+        if(e.getSource().equals(buttonPlus)){
+            toCalculate.add(Operand.ADD);
+        }
+        else if(e.getSource().equals(buttonMinus)){
+            toCalculate.add(Operand.SUB);
+        }
+        else if(e.getSource().equals(buttonMultiply)){
+            toCalculate.add(Operand.MUL);
+        }
+        else if(e.getSource().equals(buttonDivide)){
+            toCalculate.add(Operand.DIV);
+        }
+        this.resetOnNextNumber = true;
     }
+
+    /**
+     * Assume that this.toCalculate has contains alternating numbers and operands
+     * Calculates and displays the result on this.textScreen
+     * @param
+     * @return
+     */
+    private void calculate(){
+        if(resetOnNextNumber){
+            return;
+        }
+
+        // gets the final input
+        double input;
+        try {
+            input = Double.parseDouble(textScreen.getText());
+        }
+        catch(NumberFormatException exp){
+            // TODO: better exception handling
+            System.out.println("Error");
+            return;
+        }
+
+        toCalculate.add(input);
+        String concat = "";
+
+        // create string form of the math expression
+        for(Object o : toCalculate){
+            concat += o.toString();
+        }
+        System.out.println(concat);
+
+        double result = Evaluator.eval(concat);
+        textScreen.setText(Double.toString(result));
+        toCalculate.clear();
+        this.resetOnNextNumber = true;
+    }
+
 
 
 }
