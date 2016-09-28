@@ -258,7 +258,6 @@ public class Calculator extends Application {
         for(Object o : toCalculate){
             concat += o.toString();
         }
-        System.out.println(concat);
 
         double result = Evaluator.eval(concat);
         textScreen.setText(Double.toString(result));
