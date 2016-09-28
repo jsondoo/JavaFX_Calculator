@@ -9,15 +9,19 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Created by jsondoo on 2016-09-23.
  */
 public class Calculator extends Application {
-    private Label labelA = new Label("");
-    private Label labelB = new Label("0");
+    private final int WIDTH = 145;
+    private final int HEIGHT = 225;
 
+    private Label textScreen = new Label("0");
+    private Button filler = new Button("A");
+    private Button backspace = new Button("←");
+    private Button buttonC = new Button("C");
     private Button button1 = new Button("1");
     private Button button2 = new Button("2");
     private Button button3 = new Button("3");
@@ -34,8 +38,10 @@ public class Calculator extends Application {
     private Button buttonDivide = new Button("/");
     private Button buttonEqual = new Button("=");
     private Button buttonSign = new Button("±");
+    private Button buttonDot = new Button(".");
 
-    private ArrayList<Object> toCalculate = new ArrayList<>();
+    // store numbers and operands, calculates only when equal is pressed
+    private LinkedList<Object> toCalculate = new LinkedList<>();
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -44,33 +50,54 @@ public class Calculator extends Application {
         borderPane.setCenter(getBottomPane());
 
         // Event handling for button0-9
-        button0.setOnAction(e-> handleNumberButton(e));
-        button1.setOnAction(e-> handleNumberButton(e));
-        button2.setOnAction(e-> handleNumberButton(e));
-        button3.setOnAction(e-> handleNumberButton(e));
-        button4.setOnAction(e-> handleNumberButton(e));
-        button5.setOnAction(e-> handleNumberButton(e));
-        button6.setOnAction(e-> handleNumberButton(e));
-        button7.setOnAction(e-> handleNumberButton(e));
-        button8.setOnAction(e-> handleNumberButton(e));
-        button9.setOnAction(e-> handleNumberButton(e));
+        button0.setOnAction(e -> handleNumberButton(e));
+        button1.setOnAction(e -> handleNumberButton(e));
+        button2.setOnAction(e -> handleNumberButton(e));
+        button3.setOnAction(e -> handleNumberButton(e));
+        button4.setOnAction(e -> handleNumberButton(e));
+        button5.setOnAction(e -> handleNumberButton(e));
+        button6.setOnAction(e -> handleNumberButton(e));
+        button7.setOnAction(e -> handleNumberButton(e));
+        button8.setOnAction(e -> handleNumberButton(e));
+        button9.setOnAction(e -> handleNumberButton(e));
 
-        // Event handling for ±,+,-,/,*,=
-        buttonSign.setOnAction(e->{
-            if(labelB.getText().contains("-")){
-                labelB.setText(labelB.getText().replace("-",""));
-            }
-            else{
-                labelB.setText("-"+labelB.getText());
+        // Event handling for +,-,/,*
+        buttonMinus.setOnAction(e -> handleOperandButton(e));
+        buttonPlus.setOnAction(e -> handleOperandButton(e));
+        buttonMultiply.setOnAction(e -> handleOperandButton(e));
+        buttonDivide.setOnAction(e -> handleOperandButton(e));
+        // TODO: buttonEquals.setOnAction(e->something);
+
+        // rest of the buttons
+        buttonSign.setOnAction(e -> {
+            if(textScreen.getText().equals("0"))
+                return;
+
+            if (textScreen.getText().contains("-")) {
+                textScreen.setText(textScreen.getText().replace("-", ""));
+            } else {
+                textScreen.setText("-" + textScreen.getText());
             }
         });
-        buttonMinus.setOnAction(e->handleOperandButton(e));
-        buttonPlus.setOnAction(e->handleOperandButton(e));
-        buttonMultiply.setOnAction(e->handleOperandButton(e));
-        buttonDivide.setOnAction(e->handleOperandButton(e));
-        // TODO: operands
+        buttonDot.setOnAction(e -> {
+            if (!textScreen.getText().contains(".")) {
+                textScreen.setText(textScreen.getText() + ".");
+            }
+        });
+        buttonC.setOnAction(e -> textScreen.setText("0"));
+        backspace.setOnAction(e ->{
+            String str = textScreen.getText();
+            int length = str.length();
+            // matches positive or negative integers
+            if(str.matches("-?[0-9]")){
+                textScreen.setText("0");
+            }
+            else{
+                textScreen.setText(str.substring(0,length-1));
+            }
+        });
 
-        Scene scene = new Scene(borderPane, 140 ,200);
+        Scene scene = new Scene(borderPane, WIDTH, HEIGHT);
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setTitle("Calculator");
@@ -78,42 +105,48 @@ public class Calculator extends Application {
     }
 
     // top pane representing the label
-    private VBox getTopPane(){
+    private VBox getTopPane() {
         VBox topPane = new VBox();
         topPane.setAlignment(Pos.CENTER_RIGHT);
         topPane.setPadding(new Insets(10));
-        topPane.getChildren().addAll(labelA,labelB);
-        labelA.setFont(Font.font("Arial",10));
-        labelB.setFont(Font.font("Arial",20));
+        topPane.getChildren().add(textScreen);
+        textScreen.setFont(Font.font("Arial", 20));
         return topPane;
     }
 
     // bottom pane with the number/operand buttons
-    private GridPane getBottomPane(){
+    private GridPane getBottomPane() {
         GridPane bottomPane = new GridPane();
         bottomPane.setHgap(10);
         bottomPane.setVgap(10);
         bottomPane.setPadding(new Insets(10));
-        bottomPane.add(button1,0,0);
-        bottomPane.add(button2,1,0);
-        bottomPane.add(button3,2,0);
-        bottomPane.add(buttonPlus,3,0);
 
-        bottomPane.add(button4,0,1);
-        bottomPane.add(button5,1,1);
-        bottomPane.add(button6,2,1);
-        bottomPane.add(buttonMinus,3,1);
+        bottomPane.add(filler, 0, 0);
+        bottomPane.add(buttonC, 1, 0);
+        bottomPane.add(backspace, 2, 0);
+        bottomPane.add(buttonPlus, 3, 0);
 
-        bottomPane.add(button7,0,2);
-        bottomPane.add(button8,1,2);
-        bottomPane.add(button9,2,2);
-        bottomPane.add(buttonMultiply,3,2);
+        bottomPane.add(button1, 0, 1);
+        bottomPane.add(button2, 1, 1);
+        bottomPane.add(button3, 2, 1);
+        bottomPane.add(buttonMinus, 3, 1);
 
-        bottomPane.add(buttonSign,0,3);
-        bottomPane.add(button0,1,3);
-        bottomPane.add(buttonEqual,2,3);
-        bottomPane.add(buttonDivide,3,3);
+        bottomPane.add(button4, 0, 2);
+        bottomPane.add(button5, 1, 2);
+        bottomPane.add(button6, 2, 2);
+        bottomPane.add(buttonMultiply, 3, 2);
 
+        bottomPane.add(button7, 0, 3);
+        bottomPane.add(button8, 1, 3);
+        bottomPane.add(button9, 2, 3);
+        bottomPane.add(buttonDivide, 3, 3);
+
+        bottomPane.add(buttonSign, 0, 4);
+        bottomPane.add(button0, 1, 4);
+        bottomPane.add(buttonDot, 2, 4);
+        bottomPane.add(buttonEqual, 3, 4);
+
+        buttonDot.setMaxWidth(Double.MAX_VALUE);
         buttonMinus.setMaxWidth(Double.MAX_VALUE);
         buttonMultiply.setMaxWidth(Double.MAX_VALUE);
         buttonDivide.setMaxWidth(Double.MAX_VALUE);
@@ -122,101 +155,34 @@ public class Calculator extends Application {
     }
 
     private void handleNumberButton(ActionEvent e) {
-
+        // get the string of the button
+        String textToSet = ((Button) e.getSource()).getText();
 
         // special case for button0
         if (e.getSource().equals(button0)) {
-            if (!labelB.getText().equals("0")) {
-                labelB.setText(labelB.getText() + getButtonString((Button)e.getSource()));
+            if (!textScreen.getText().equals("0")) {
+                textScreen.setText(textScreen.getText() + textToSet);
             }
         }
         // for other number buttons, set the text to corresponding button
         else {
-            if (labelB.getText().equals("0")) {
-                labelB.setText(getButtonString((Button)e.getSource()));
-            }
-            else{
-                labelB.setText(labelB.getText()+getButtonString((Button)e.getSource()));
+            if (textScreen.getText().equals("0")) {
+                textScreen.setText(textToSet);
+
+            } else {
+                textScreen.setText(textScreen.getText() + textToSet);
             }
         }
     }
 
-    private void handleOperandButton(ActionEvent e){
-        /** this.state = true;
-        if(num == null) {
-            this.num = Integer.parseInt(labelB.getText());
-            if(e.getSource().equals(buttonPlus)) {
-                this.storedOperand = Operand.PLUS;
-                this.savedOperand = Operand.PLUS;
-            }
-            else if(e.getSource().equals(buttonMultiply)){
-                this.storedOperand = Operand.MULTIPLY;
-                this.savedOperand = Operand.MULTIPLY;
-            }
-            else if(e.getSource().equals(buttonMinus)){
-                this.storedOperand = Operand.MINUS;
-                this.savedOperand = Operand.MINUS;
-            }
-            else{
-                this.storedOperand = Operand.DIVIDE;
-                this.savedOperand = Operand.DIVIDE;
-            }
-        }
-        else {
-            if(e.getSource().equals(buttonPlus)){
-                Integer num = Integer.parseInt(labelB.getText()) + this.num;
-                labelB.setText(num.toString());
-            }
-
-
-
-
-
-        }
-*/
+    // TODO
+    private void handleOperandButton(ActionEvent e) {
+        //get the number inputted so far
+        double input = Double.parseDouble(textScreen.getText());
 
     }
 
 
-    /**
-     *
-     * @param button
-     * @return string form of the button (ex. "1","2","3")
-     */
-   private String getButtonString(Button button){
-       if(button.equals(button0)){
-           return "0";
-       }
-       else if(button.equals(button1)){
-           return "1";
-       }
-       else if(button.equals(button2)){
-           return "2";
-       }
-       else if(button.equals(button3)){
-           return "3";
-       }
-       else if(button.equals(button4)){
-           return "4";
-       }
-       else if(button.equals(button5)){
-           return "5";
-       }
-       else if(button.equals(button6)){
-           return "6";
-       }
-       else if(button.equals(button7)){
-           return "7";
-       }
-       else if(button.equals(button8)){
-           return "8";
-       }
-       else if(button.equals(button9)){
-           return "9";
-       }
-
-       return "";
-   }
 }
 
 
