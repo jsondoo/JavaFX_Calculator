@@ -234,8 +234,6 @@ public class Calculator extends Application {
     /**
      * Assume that this.toCalculate has contains alternating numbers and operands
      * Calculates and displays the result on this.textScreen
-     * @param
-     * @return
      */
     private void calculate(){
         if(resetOnNextNumber){
