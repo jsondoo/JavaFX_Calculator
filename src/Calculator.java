@@ -15,11 +15,12 @@ import java.util.LinkedList;
  * Created by jsondoo on 2016-09-23.
  */
 public class Calculator extends Application {
-    private final int WIDTH = 145;
+    private final int WIDTH = 200;
     private final int HEIGHT = 225;
 
     private Label textScreen = new Label("0");
-    private Button filler = new Button("x");
+
+    private Button filler = new Button("?");
     private Button backspace = new Button("←");
     private Button buttonC = new Button("C");
     private Button button1 = new Button("1");
@@ -117,7 +118,7 @@ public class Calculator extends Application {
         topPane.setAlignment(Pos.CENTER_RIGHT);
         topPane.setPadding(new Insets(10));
         topPane.getChildren().add(textScreen);
-        textScreen.setFont(Font.font("Arial", 20));
+        textScreen.setFont(Font.font("Arial", 16));
         return topPane;
     }
 
@@ -127,7 +128,7 @@ public class Calculator extends Application {
      */
     private GridPane getBottomPane() {
         GridPane bottomPane = new GridPane();
-        bottomPane.setHgap(10);
+        bottomPane.setHgap(20);
         bottomPane.setVgap(10);
         bottomPane.setPadding(new Insets(10));
 
@@ -156,6 +157,7 @@ public class Calculator extends Application {
         bottomPane.add(buttonDot, 2, 4);
         bottomPane.add(buttonEqual, 3, 4);
 
+
         buttonDot.setMaxWidth(Double.MAX_VALUE);
         buttonMinus.setMaxWidth(Double.MAX_VALUE);
         buttonMultiply.setMaxWidth(Double.MAX_VALUE);
@@ -174,25 +176,31 @@ public class Calculator extends Application {
             textScreen.setText("0");
         }
 
-
         // get the string of the button
         String textToSet = ((Button) e.getSource()).getText();
 
-        // special case for button0
+        // case for button0
         if (e.getSource().equals(button0)) {
+            // cannot divide by 0
+            if(toCalculate.getLast().equals(Operand.DIV)){
+                textScreen.setText("Cannot divide by 0");
+                return;
+            }
+
+            // only add 0 if textScreen isn't set to 0
             if (!textScreen.getText().equals("0")) {
                 textScreen.setText(textScreen.getText() + textToSet);
             }
+
         }
         // for other number buttons, set the text to corresponding button
-        else {
-            if (textScreen.getText().equals("0")) {
-                textScreen.setText(textToSet);
-
-            } else {
-                textScreen.setText(textScreen.getText() + textToSet);
-            }
+        else if (textScreen.getText().equals("0")) {
+            textScreen.setText(textToSet);
         }
+        else {
+            textScreen.setText(textScreen.getText() + textToSet);
+        }
+
     }
 
     /**
@@ -235,8 +243,8 @@ public class Calculator extends Application {
      * Assume that this.toCalculate has contains alternating numbers and operands
      * Calculates and displays the result on this.textScreen
      */
-    private void calculate(){
-        if(resetOnNextNumber){
+    private void calculate() {
+        if (resetOnNextNumber) {
             return;
         }
 
@@ -244,23 +252,20 @@ public class Calculator extends Application {
         double input;
         try {
             input = Double.parseDouble(textScreen.getText());
-        }
-        catch(NumberFormatException exp){
+        } catch (NumberFormatException exp) {
             // TODO: better exception handling
             System.out.println("Error");
             return;
         }
-
         toCalculate.add(input);
-        String concat = "";
 
-        // create string form of the math expression
-        for(Object o : toCalculate){
-            concat += o.toString();
+        double result = Evaluator.eval(toCalculate);
+        //check if result is an integer or not, and get rid of the decimal (e.g. change 10.0 to 10)
+        if (result % 1 == 0) {
+            textScreen.setText(Integer.toString((int) result));
+        } else {
+            textScreen.setText(Double.toString(result));
         }
-
-        double result = Evaluator.eval(concat);
-        textScreen.setText(Double.toString(result));
         toCalculate.clear();
         this.resetOnNextNumber = true;
     }
