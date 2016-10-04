@@ -9,7 +9,7 @@ public final class Evaluator {
     }
 
     /**
-     * Evaluates a math expression given in the form of a linked list
+     * Evaluates a list with alternating numbers and operands
      * @param list
      * @return the evaluated expression as a double
      */
