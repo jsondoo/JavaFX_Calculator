@@ -181,8 +181,8 @@ public class Calculator extends Application {
 
         // case for button0
         if (e.getSource().equals(button0)) {
-            // cannot divide by 0
-            if(toCalculate.getLast().equals(Operand.DIV)){
+            // case for dividing zero (checks that the list size is greater than 2 before checking for Operand.DIV)
+            if(toCalculate.size() >= 2 && toCalculate.getLast().equals(Operand.DIV)){
                 textScreen.setText("Cannot divide by 0");
                 return;
             }
