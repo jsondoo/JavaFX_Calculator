@@ -6,7 +6,23 @@ A standared calculator I created from scratch (GUI was created solely with JavaF
 
 <h1>Images</h1>
 
-![alt tag](http://i.imgur.com/BEs0ZLb.png)
+1) Addition and Subtraction
+
+5 + 3 - (-6) = 14
+
+![](http://i.imgur.com/IazKZb4.gif)
+
+2) Multiplication
+
+![](http://i.imgur.com/C3wqNNN.gif)
+
+3) Division
+
+![](http://i.imgur.com/QiLk17c.gif)
+
+4) Deletion
+
+![](http://i.imgur.com/CwTtfYl.gif)
 
 <h1>Remarks</h1>
 
