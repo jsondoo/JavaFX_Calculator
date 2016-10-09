@@ -14,15 +14,21 @@ A standared calculator I created from scratch (GUI was created solely with JavaF
 
 2) Multiplication
 
+22 * 0.05 = 1.1
+
 ![](http://i.imgur.com/C3wqNNN.gif)
 
 3) Division
+
+5 / -8 = -0.625
 
 ![](http://i.imgur.com/QiLk17c.gif)
 
 4) Deletion
 
 ![](http://i.imgur.com/CwTtfYl.gif)
+
+
 
 <h1>Remarks</h1>
 
