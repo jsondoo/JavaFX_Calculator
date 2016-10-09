@@ -20,7 +20,7 @@ public class Calculator extends Application {
 
     private Label textScreen = new Label("0");
 
-    private Button filler = new Button("?");
+    private Button percent = new Button("%");
     private Button backspace = new Button("←");
     private Button buttonC = new Button("C");
     private Button button1 = new Button("1");
@@ -45,6 +45,7 @@ public class Calculator extends Application {
 
     // store numbers and operands, calculates only when equal is pressed
     private LinkedList<Object> toCalculate = new LinkedList<>();
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -71,6 +72,10 @@ public class Calculator extends Application {
         buttonDivide.setOnAction(e -> handleOperandButton(e));
 
         // rest of the buttons
+        percent.setOnAction(e->{
+            Double percentString = Double.parseDouble(textScreen.getText()) / 100.0;
+            textScreen.setText(percentString.toString());
+        });
         buttonSign.setOnAction(e -> {
             if(textScreen.getText().equals("0"))
                 return;
@@ -132,7 +137,7 @@ public class Calculator extends Application {
         bottomPane.setVgap(10);
         bottomPane.setPadding(new Insets(10));
 
-        bottomPane.add(filler, 0, 0);
+        bottomPane.add(percent, 0, 0);
         bottomPane.add(buttonC, 1, 0);
         bottomPane.add(backspace, 2, 0);
         bottomPane.add(buttonPlus, 3, 0);
